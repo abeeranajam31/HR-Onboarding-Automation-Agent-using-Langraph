@@ -1,0 +1,5 @@
+employee_id,first_name,last_name,role,department,start_date,manager_email,location,employment_type
+EMP001,Alice,Johnson,Software Engineer,Engineering,2025-03-01,mike.chen@company.com,Remote,Full-time
+EMP002,Bob,Smith,Sales Representative,Sales,2025-03-05,sarah.williams@company.com,New York,Full-time
+EMP003,Carol,Davis,Software Engineer,Engineering,2025-03-10,mike.chen@company.com,San Francisco,Full-time
+EMP004,David,Martinez,Product Manager,Product,2025-03-15,lisa.brown@company.com,Remote,Full-time
