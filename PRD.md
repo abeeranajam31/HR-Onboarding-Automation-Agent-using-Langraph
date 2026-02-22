@@ -69,3 +69,18 @@ Automate the repetitive coordination work, allowing HR to focus on human connect
 - Send automated notifications
 - Update tracking dashboards
 
+## Project Tools
+
+This project includes HR onboarding tools with Pydantic validation, integrated into a ReAct agent:
+
+1. **search_onboarding_knowledge** – Search HR policies and onboarding docs. Input: `query`, optional `doc_type`, `top_k`. Returns top relevant documents.
+
+2. **generate_onboarding_checklist** – Generate a task checklist for a new hire. Input: `role`, `department`, `start_date`. Returns tasks with urgency labels (`OVERDUE`, `URGENT`, `UPCOMING`).
+
+3. **get_employee_onboarding_status** – Retrieve employee profile and start date. Input: `employee_id`. Returns role, department, start date, and days until start.
+
+4. **evaluate_day1_readiness** – Assess Day-1 readiness. Input: `employee_id`. Returns readiness score (`READY`, `AT RISK`, `NOT READY`) with blockers.
+
+5. **calculate_onboarding_risk** – Calculate onboarding delay risk. Input: `employee_id`. Returns numeric score (0–100) and risk level (`LOW`, `MEDIUM`, `HIGH`).
+
+All tools allow the agent to reason, call the appropriate tool, and update its state with real data.

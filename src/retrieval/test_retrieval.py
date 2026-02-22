@@ -6,6 +6,7 @@ Purpose:
 """
 
 import chromadb
+
 from langchain.embeddings import HuggingFaceEmbeddings
 
 # ─────────────────────────────────────────────
