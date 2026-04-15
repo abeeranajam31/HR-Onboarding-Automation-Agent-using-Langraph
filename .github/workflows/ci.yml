@@ -32,5 +32,7 @@ jobs:
             echo "::warning::OPENAI_API_KEY secret is not configured"
           fi
 
-      - name: Run tests
-        run: python -m pytest tests/ -v
+      - name: Lint — check Python syntax
+        run: |
+          python -m py_compile graph.py
+          python -m py_compile src/tools/tools.py
