@@ -1,0 +1,40 @@
+name: quality-gate
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  eval-gate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: TASK_1_2022038/hr-onboarding-agent
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+      REQUIRE_CREDENTIALS: "1"
+      EVAL_THRESHOLDS_PATH: eval_thresholds.json
+      EVAL_RESULTS_PATH: output/eval_results.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run evaluation quality gate
+        run: python run_eval.py
+
+      - name: Upload eval results artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results
+          path: TASK_1_2022038/hr-onboarding-agent/output/eval_results.json
