@@ -1,0 +1,100 @@
+{
+  "roles": {
+    "Software Engineer": {
+      "tasks": [
+        {
+          "id": "IT-001",
+          "task": "Create email account",
+          "department": "IT",
+          "priority": "high",
+          "due_before_start_days": 5,
+          "estimated_time_minutes": 15
+        },
+        {
+          "id": "IT-002",
+          "task": "Order MacBook Pro M2 16GB",
+          "department": "IT",
+          "priority": "high",
+          "due_before_start_days": 7,
+          "estimated_time_minutes": 20
+        },
+        {
+          "id": "IT-003",
+          "task": "Grant GitHub organization access",
+          "department": "IT",
+          "priority": "medium",
+          "due_before_start_days": 2,
+          "estimated_time_minutes": 10
+        },
+        {
+          "id": "HR-001",
+          "task": "Assign security training",
+          "department": "HR",
+          "priority": "high",
+          "due_before_start_days": 3,
+          "estimated_time_minutes": 5
+        },
+        {
+          "id": "HR-002",
+          "task": "Assign OWASP secure coding training",
+          "department": "HR",
+          "priority": "medium",
+          "due_before_start_days": 3,
+          "estimated_time_minutes": 5
+        },
+        {
+          "id": "MGR-001",
+          "task": "Schedule 1:1 orientation meeting",
+          "department": "Management",
+          "priority": "high",
+          "due_before_start_days": 2,
+          "estimated_time_minutes": 30
+        }
+      ]
+    },
+    "Sales Representative": {
+      "tasks": [
+        {
+          "id": "IT-001",
+          "task": "Create email account",
+          "department": "IT",
+          "priority": "high",
+          "due_before_start_days": 5,
+          "estimated_time_minutes": 15
+        },
+        {
+          "id": "IT-004",
+          "task": "Order Dell Latitude laptop",
+          "department": "IT",
+          "priority": "high",
+          "due_before_start_days": 7,
+          "estimated_time_minutes": 20
+        },
+        {
+          "id": "IT-005",
+          "task": "Grant Salesforce CRM access",
+          "department": "IT",
+          "priority": "high",
+          "due_before_start_days": 2,
+          "estimated_time_minutes": 15
+        },
+        {
+          "id": "HR-001",
+          "task": "Assign security training",
+          "department": "HR",
+          "priority": "high",
+          "due_before_start_days": 3,
+          "estimated_time_minutes": 5
+        },
+        {
+          "id": "SALES-001",
+          "task": "Assign sales methodology training",
+          "department": "Sales",
+          "priority": "medium",
+          "due_before_start_days": 1,
+          "estimated_time_minutes": 5
+        }
+      ]
+    }
+  }
+}

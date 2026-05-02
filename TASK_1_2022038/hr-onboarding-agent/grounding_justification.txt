@@ -1,0 +1,1 @@
+The agent needs the onboarding PDFs, employee CSV, and checklist JSON because those sources contain company-specific policies, start dates, and task sequencing that cannot be reliably inferred from the model's pre-trained knowledge. The local retrieval layer lets the agent answer with current and private facts instead of generic onboarding advice.

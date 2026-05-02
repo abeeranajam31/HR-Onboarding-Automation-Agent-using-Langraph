@@ -1,0 +1,28 @@
+POST /chat
+curl -sS -X POST http://127.0.0.1:8000/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Evaluate Day-1 readiness for EMP1001","thread_id":"demo-001"}'
+
+Response:
+{"answer":"Final Answer:\nDay-1 Readiness: AT RISK\nScore: 50/100\nBlockers: Start date already passed","status":"completed","thread_id":"demo-001"}
+
+POST /stream
+curl -sS -N -X POST http://127.0.0.1:8000/stream \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Show onboarding status for EMP1001","thread_id":"demo-002"}'
+
+Response:
+event: chunk
+data: {"thread_id": "demo-002", "chunk": {"guardrail_node": {"security": {"status": "SAFE", "reason": "Prompt passed deterministic validation.", "category": "safe"}, "trace": [{"node": "guardrail_node", "latency_ms": 0.066, "decision": "SAFE", "category": "safe"}]}}}
+
+event: chunk
+data: {"thread_id": "demo-002", "chunk": {"agent_node": {"messages": ["content='Reasoning: selecting safe tool for the request.' id='6082a054-c59f-4161-bb9c-dd394dd16444' tool_calls=[{'name': 'get_employee_onboarding_status', 'args': {'employee_id': 'EMP1001'}, 'id': 's3', 'type': 'tool_call'}]"], "trace": [{"node": "guardrail_node", "latency_ms": 0.066, "decision": "SAFE", "category": "safe"}, {"node": "agent_node", "latency_ms": 0.078, "selected_tool": "get_employee_onboarding_status"}], "selected_tool": "get_employee_onboarding_status"}}}
+
+event: chunk
+data: {"thread_id": "demo-002", "chunk": {"tools": {"messages": ["content='Employee: Alice Johnson (EMP1001)\\nRole: Software Engineer | Department: Engineering\\nStart Date: 2025-03-01 (-426 days from today)\\nManager: mike.chen@company.com | Location: Remote | Employment: Full-time' name='get_employee_onboarding_status' tool_call_id='s3'"], "trace": [{"node": "guardrail_node", "latency_ms": 0.066, "decision": "SAFE", "category": "safe"}, {"node": "agent_node", "latency_ms": 0.078, "selected_tool": "get_employee_onboarding_status"}, {"node": "tool_node", "latency_ms": 0.842, "tool_called": "get_employee_onboarding_status"}], "raw_output": "Employee: Alice Johnson (EMP1001)\nRole: Software Engineer | Department: Engineering\nStart Date: 2025-03-01 (-426 days from today)\nManager: mike.chen@company.com | Location: Remote | Employment: Full-time"}}}
+
+event: chunk
+data: {"thread_id": "demo-002", "chunk": {"output_guardrail": {"messages": ["content='Final Answer:\\nEmployee: Alice Johnson (EMP1001)\\nRole: Software Engineer | Department: Engineering\\nStart Date: 2025-03-01 (-426 days from today)\\nManager: [REDACTED_EMAIL] | Location: Remote | Employment: Full-time'"], "trace": [{"node": "guardrail_node", "latency_ms": 0.066, "decision": "SAFE", "category": "safe"}, {"node": "agent_node", "latency_ms": 0.078, "selected_tool": "get_employee_onboarding_status"}, {"node": "tool_node", "latency_ms": 0.842, "tool_called": "get_employee_onboarding_status"}, {"node": "output_guardrail_node", "latency_ms": 0.058, "redactions": ["email"]}], "sanitized_output": "Employee: Alice Johnson (EMP1001)\nRole: Software Engineer | Department: Engineering\nStart Date: 2025-03-01 (-426 days from today)\nManager: [REDACTED_EMAIL] | Location: Remote | Employment: Full-time"}}}
+
+event: done
+data: {"thread_id": "demo-002", "status": "completed", "answer": "Final Answer:\nEmployee: Alice Johnson (EMP1001)\nRole: Software Engineer | Department: Engineering\nStart Date: 2025-03-01 (-426 days from today)\nManager: [REDACTED_EMAIL] | Location: Remote | Employment: Full-time"}

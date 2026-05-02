@@ -1,0 +1,26 @@
+services:
+  agent:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - chroma
+    environment:
+      LANGSMITH_TRACING: "${LANGSMITH_TRACING:-false}"
+      LANGCHAIN_TRACING_V2: "${LANGCHAIN_TRACING_V2:-false}"
+      VECTOR_DB_URL: "http://chroma:8000"
+      CHECKPOINT_DB_PATH: "/app/persistence/checkpoints/checkpoint_db.sqlite"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      LANGSMITH_API_KEY: "${LANGSMITH_API_KEY:-}"
+    volumes:
+      - checkpoint_data:/app/persistence/checkpoints
+  chroma:
+    image: chromadb/chroma:latest
+    ports:
+      - "8001:8000"
+    volumes:
+      - vector_data:/chroma/chroma
+
+volumes:
+  checkpoint_data:
+  vector_data:

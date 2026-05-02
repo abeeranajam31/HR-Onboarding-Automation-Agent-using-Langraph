@@ -1,0 +1,2 @@
+Local observability export: output/observability_trace.json
+PDF trace export: output/complex_trace_export.pdf

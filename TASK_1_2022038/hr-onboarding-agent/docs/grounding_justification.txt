@@ -1,0 +1,47 @@
+GROUNDING JUSTIFICATION: Why RAG is Essential for HR Onboarding Agent
+
+1. COMPANY-SPECIFIC POLICIES (Not in Pre-training)
+   - LLMs don't know YOUR company's remote work policy
+   - Equipment specifications change (M1 vs M2 MacBooks)
+   - PTO policies vary by organization
+   - Without RAG: Agent would hallucinate generic policies
+
+2. COMPLIANCE & LEGAL ACCURACY
+   - Training requirements are legally mandated
+   - Incorrect information = compliance violations = fines
+   - Must cite exact policy version and section
+   - Without RAG: Risk of outdated or incorrect compliance info
+
+3. DYNAMIC CHECKLISTS
+   - Onboarding tasks differ by role (Engineer vs Sales)
+   - New departments added → new checklists created
+   - Pre-trained model frozen at training cutoff
+   - Without RAG: Agent wouldn't know role-specific requirements
+
+4. AUDITABILITY & TRUST
+   - HR needs to verify: "Where did this recommendation come from?"
+   - RAG provides source citations: "According to employee_handbook.pdf, Section 3..."
+   - Without RAG: Black box decisions, no traceability
+
+5. REAL-TIME UPDATES
+   - Policy updated today? RAG reflects it immediately
+   - No need to retrain model (costly, slow)
+   - Just re-ingest updated PDFs
+   - Without RAG: Stale information for months
+
+6. COST EFFICIENCY
+   - Fine-tuning LLM for each company = $$$
+   - RAG works with base model + company docs
+   - Shareable architecture across clients
+   - Without RAG: Custom model per organization = not scalable
+
+EXAMPLE FAILURE WITHOUT RAG:
+User: "What laptop do engineers get?"
+LLM (no RAG): "Typically a laptop, contact IT for details" ❌
+LLM (with RAG): "Engineers receive MacBook Pro M2 16GB according to Equipment Policy, Section 2. IT will order within 24 hours." ✅
+
+METADATA FILTERING IMPORTANCE:
+Query: "What's the remote work policy?"
+Without filters: Returns 47 chunks (policies, checklists, employee records)
+With filters {doc_type: "policy", department: "HR"}: Returns 3 relevant chunks
+Result: Faster, more accurate responses

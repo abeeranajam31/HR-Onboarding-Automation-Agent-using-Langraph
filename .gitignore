@@ -1,0 +1,4 @@
+.DS_Store
+.exam_venv/
+venv/
+__pycache__/

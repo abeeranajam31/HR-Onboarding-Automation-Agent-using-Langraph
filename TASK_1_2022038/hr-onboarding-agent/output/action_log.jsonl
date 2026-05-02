@@ -1,0 +1,1 @@
+{"timestamp": "2026-04-24T12:58:24.464302Z", "recipient_email": "smoke.two@example.com", "subject": "Checkpoint subject", "body": "This is a sufficiently long body for persistence smoke testing.", "status": "SENT_SIMULATED"}

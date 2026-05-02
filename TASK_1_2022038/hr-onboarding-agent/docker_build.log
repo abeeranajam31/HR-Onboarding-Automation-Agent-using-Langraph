@@ -1,0 +1,67 @@
+Docker build log
+
+Commands run:
+  docker compose down
+  docker compose build
+  docker compose up -d
+  docker ps
+
+Output:
+ Container hr-onboarding-agent-agent-1 Stopping
+ Container hr-onboarding-agent-agent-1 Stopped
+ Container hr-onboarding-agent-agent-1 Removing
+ Container hr-onboarding-agent-agent-1 Removed
+ Container hr-onboarding-agent-chroma-1 Stopping
+ Container hr-onboarding-agent-chroma-1 Stopped
+ Container hr-onboarding-agent-chroma-1 Removing
+ Container hr-onboarding-agent-chroma-1 Removed
+ Network hr-onboarding-agent_default Removing
+ Network hr-onboarding-agent_default Removed
+ Image hr-onboarding-agent-agent Building
+ #1 [internal] load local bake definitions
+ #1 reading from stdin 606B done
+ #1 DONE 0.0s
+ #2 [internal] load build definition from Dockerfile
+ #2 transferring dockerfile: 367B done
+ #2 DONE 0.0s
+ #3 [internal] load metadata for docker.io/library/python:3.11-slim@sha256:6d85378d88a19cd4d76079817532d62232be95757cb45945a99fec8e8084b9c2
+ #3 DONE 0.0s
+ #4 [internal] load .dockerignore
+ #4 transferring context: 231B done
+ #4 DONE 0.0s
+ #5 [1/6] FROM docker.io/library/python:3.11-slim@sha256:6d85378d88a19cd4d76079817532d62232be95757cb45945a99fec8e8084b9c2
+ #5 DONE 0.0s
+ #6 [internal] load build context
+ #6 transferring context: 3.65kB done
+ #6 DONE 0.0s
+ #7 [2/6] WORKDIR /app
+ #7 CACHED
+ #8 [3/6] COPY requirements.txt .
+ #8 CACHED
+ #9 [4/6] RUN pip install --no-cache-dir -r requirements.txt
+ #9 CACHED
+ #10 [5/6] COPY . .
+ #10 DONE 0.0s
+ #11 [6/6] RUN mkdir -p /app/persistence/checkpoints
+ #11 DONE 0.1s
+ #12 exporting to image
+ #12 exporting layers 0.0s done
+ #12 writing image sha256:623d4e950cc06a17678914fadd7d15b0815d0bfa77517f39cc5b9def40c4e75c done
+ #12 naming to docker.io/library/hr-onboarding-agent-agent done
+ #12 DONE 0.0s
+ #13 resolving provenance for metadata file
+ #13 DONE 0.0s
+ Image hr-onboarding-agent-agent Built
+ Network hr-onboarding-agent_default Creating
+ Network hr-onboarding-agent_default Created
+ Container hr-onboarding-agent-chroma-1 Creating
+ Container hr-onboarding-agent-chroma-1 Created
+ Container hr-onboarding-agent-agent-1 Creating
+ Container hr-onboarding-agent-agent-1 Created
+ Container hr-onboarding-agent-chroma-1 Starting
+ Container hr-onboarding-agent-chroma-1 Started
+ Container hr-onboarding-agent-agent-1 Starting
+ Container hr-onboarding-agent-agent-1 Started
+ CONTAINER ID   IMAGE                       COMMAND                  CREATED         STATUS         PORTS                                         NAMES
+ 4c8f33d5f0d9   hr-onboarding-agent-agent   "uvicorn main:app --…"   5 seconds ago   Up 5 seconds   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   hr-onboarding-agent-agent-1
+ 8111a73ea98a   chromadb/chroma:latest      "dumb-init -- chroma…"   5 seconds ago   Up 5 seconds   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp   hr-onboarding-agent-chroma-1
