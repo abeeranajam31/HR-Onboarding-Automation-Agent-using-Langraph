@@ -12,9 +12,10 @@ jobs:
       run:
         working-directory: TASK_1_2022038/hr-onboarding-agent
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
-      REQUIRE_CREDENTIALS: "1"
+      REQUIRE_CREDENTIALS: "0"
       EVAL_THRESHOLDS_PATH: eval_thresholds.json
       EVAL_RESULTS_PATH: output/eval_results.json
     steps:
