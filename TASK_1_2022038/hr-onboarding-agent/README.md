@@ -1,40 +1,121 @@
+# 🤖 HR Onboarding Automation Agent
+**Industrial-Grade AI Agent for Seamless Employee Onboarding**
 
-<img width="812" height="790" alt="Screenshot 2026-02-14 at 15 54 26" src="https://github.com/user-attachments/assets/6232dd5d-d71d-42f5-bac4-693f4c2bb0f7" />
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/release/python-3110/)
+[![LangGraph](https://img.shields.io/badge/Framework-LangGraph-orange.svg)](https://github.com/langchain-ai/langgraph)
+[![Docker](https://img.shields.io/badge/Deployment-Docker-blue.svg)](https://www.docker.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## 🌟 Overview
+The **HR Onboarding Automation Agent** is a sophisticated, multi-agent system designed to solve the complexity of corporate onboarding. Built using **LangGraph**, it moves beyond simple chatbots to provide a reliable, secure, and stateful orchestration of tasks including document retrieval, risk assessment, and manager communications.
 
-Available Employee IDs: ['EMP1001', 'EMP002', 'EMP003', 'EMP004']
-
-🔎 TEST 1 — KB Search
-[policy | organization-coe.pdf]
-. These guidelines and rules may prohibit certain actions and require others. Guidelines provide a basis for ethical decision making when employees face situations where black-and-white rules are impossible or inappropriate. They may involve especially sensitive issues like conflicts of interest, insider trading, and the offering or acceptance of gifts, gratuities or entertainment. Rules have a standard setting function. They may draw heavily on existing law as a source or lay down other obligations for an organization. 4
+### 🚀 Key Capabilities
+*   **Multi-Agent Team**: Collaborative execution between a **Researcher** (evidence gathering) and an **Analyst** (synthesis).
+*   **Intelligent RAG**: Context-aware retrieval from HR policies and employee records using **ChromaDB**.
+*   **Human-in-the-Loop (HITL)**: Safety breakpoints for high-risk actions (e.g., email dispatch) requiring manual approval.
+*   **Robust Security**: Integrated guardrails for prompt injection defense and PII redaction.
+*   **Observability & Monitoring**: Real-time tracing with **LangSmith** and a dedicated **Drift Monitoring** dashboard.
 
 ---
 
-[policy | organization-coe.pdf]
-. It will direct your employees to other resources (internal to the organization and externally) should they have a question, need to seek further clarific ation or simply want more information on the code provisions. It should include specific statements such as how to access the organization’s ethics office (or person responsible for ethical issues) and provide details on your enforcement policy and mechanisms. Ready reference lists, toll -free telephone numbers, e -mail and web sites and the like would typically be included
+## 🏗️ Architecture
+The system follows a directed cyclic graph (DCG) pattern for robust state management and error handling.
+
+```mermaid
+graph TD
+    User([User Query]) --> Guard[Guardrail Node]
+    Guard -->|Safe| Agent{Agent Node}
+    Guard -->|Unsafe| Alert[Alert Node]
+    Agent -->|Search/Status| Tools[Tool Node]
+    Tools -->|Result| OutputGuard[Output Sanitization]
+    OutputGuard --> END([Final Answer])
+    Agent -->|Action| HITL[Safety Pause]
+    HITL -->|Approved| Executor[Executor Node]
+    Executor --> END
+```
 
 ---
 
-[policy | organization-coe.pdf]
-. Guidelines 1. Avoid the acquisition and dissemination of information that may not be used in employment related decisions. 2. Investigate the accuracy and source of information before allowing it to be used in employment related decisions. 3. Correct inaccurate HR information promptly. 4. Do not knowingly reveal restricted or confidential information. 5. Insure the accuracy and completeness of all communicated information about policies and practices. 6. Insure the accuracy and completeness of all communicated information used in training. Example . .
+## 📂 Project Structure
+```bash
+hr-onboarding-agent/
+├── app.py                # Streamlit Frontend (Feedback UI)
+├── main.py               # FastAPI Backend (Streaming SSE)
+├── graph.py              # Core LangGraph Implementation
+├── multi_agent_graph.py  # Team-based Orchestration
+├── secured_graph.py      # Security-hardened Graph
+├── tools/                # Pydantic-validated Tools
+├── ingest_data.py        # RAG Ingestion Pipeline
+├── guardrails_config.py  # Security Patterns & Logic
+├── analyze_feedback.py   # Drift Monitoring Script
+├── Dockerfile            # Containerization
+└── docs/                 # Detailed Lab Reports & PRD
+```
 
-📋 TEST 2 — Checklist
-UPCOMING | Create email account (Dept: IT)
-UPCOMING | Order MacBook Pro M2 16GB (Dept: IT)
-UPCOMING | Grant GitHub organization access (Dept: IT)
-UPCOMING | Assign security training (Dept: HR)
-UPCOMING | Assign OWASP secure coding training (Dept: HR)
-UPCOMING | Schedule 1:1 orientation meeting (Dept: Management)
+---
 
-👤 TEST 3 — Employee Status
-Alice Johnson — Software Engineer (Engineering)
-Start Date: 2025-03-01 (-357 days)
+## 🛠️ Tech Stack
+*   **Core**: Python 3.11, LangGraph, LangChain
+*   **Vector DB**: ChromaDB
+*   **API**: FastAPI, Uvicorn
+*   **Frontend**: Streamlit
+*   **Security**: Pydantic, Regex-based Rails
+*   **DevOps**: Docker, Docker Compose, GitHub Actions
 
-✅ TEST 4 — Readiness
-Day-1 Readiness: NOT READY
-Score: 20/100
-Blockers: Very little time before start date, Start date already passed
+---
 
-📊 TEST 5 — Risk Score
-Risk Score: 40/100 — MEDIUM risk of onboarding delay
->>>>>>> 0744ce8 (Implemented LangGraph agent with nodes, routing, and project-specific tools)
+## ⚙️ Setup & Installation
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/abeeranajam31/HR-Onboarding-Automation-Agent-using-Langraph.git
+cd hr-onboarding-agent
+```
+
+### 2. Environment Configuration
+Create a `.env` file in the root directory:
+```env
+OPENAI_API_KEY=your_api_key
+LANGSMITH_API_KEY=your_langsmith_key (optional)
+CHECKPOINT_DB_PATH=persistence/checkpoints/checkpoint_db.sqlite
+```
+
+### 3. Run with Docker (Recommended)
+```bash
+docker compose up --build
+```
+*   **API**: `http://localhost:8000`
+*   **UI**: `http://localhost:8501`
+
+### 4. Manual Installation
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python ingest_data.py
+python main.py
+```
+
+---
+
+## 🧪 Lab Breakdown (Full Lifecycle)
+The project is organized into 11 distinct labs covering the entire AI development lifecycle:
+1.  **Problem Framing**: PRD and strategic alignment.
+2.  **Knowledge Engineering**: RAG pipeline and vector indexing.
+3.  **Reasoning Loop**: ReAct agent implementation.
+4.  **Multi-Agent**: Collaborative personas.
+5.  **State Management**: Persistence and HITL.
+6.  **Security**: Input/Output guardrails.
+7.  **Evaluation**: Quantitative audit with RAGAS/DeepEval.
+8.  **API Layer**: RESTful streaming endpoints.
+9.  **Packaging**: Docker containerization.
+10. **CI/CD**: Automated quality gates.
+11. **Drift Monitoring**: Post-deployment feedback loops.
+
+---
+
+## 📝 License
+This project is licensed under the MIT License.
+
+---
+**Developed by Student 2022038** | *Advancing Agentic AI in Enterprise HR*

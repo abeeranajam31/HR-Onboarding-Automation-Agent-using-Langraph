@@ -1,3 +1,17 @@
+"""Headless evaluation gate for CI.
+
+Environment variables (all optional unless noted):
+
+- TEST_DATASET_PATH: path to test_dataset.json (default: ./test_dataset.json)
+- EVAL_THRESHOLDS_PATH: path to thresholds JSON (default: ./eval_thresholds.json)
+- EVAL_RESULTS_PATH: where to write machine-readable results (default: ./output/eval_results.json)
+- REQUIRE_CREDENTIALS: if "1", exit 1 when OPENAI_API_KEY is missing (for pipelines that call LLMs)
+- OPENAI_API_KEY: required only when REQUIRE_CREDENTIALS=1
+
+Exit codes: 0 if every gated metric passes its threshold, else 1.
+Writes JSON with results_summary.metrics: name, score, threshold, pass per metric.
+"""
+
 from __future__ import annotations
 
 import json
@@ -78,8 +92,18 @@ def main() -> None:
     thresholds_path = Path(os.getenv("EVAL_THRESHOLDS_PATH", PROJECT_ROOT / "eval_thresholds.json"))
     results_path = Path(os.getenv("EVAL_RESULTS_PATH", PROJECT_ROOT / "output" / "eval_results.json"))
 
+    if not dataset_path.is_file():
+        print(f"Dataset not found: {dataset_path}", file=sys.stderr)
+        sys.exit(1)
+    if not thresholds_path.is_file():
+        print(f"Thresholds file not found: {thresholds_path}", file=sys.stderr)
+        sys.exit(1)
+
     dataset = _load_json(dataset_path)
     thresholds = _load_json(thresholds_path)
+    if not isinstance(thresholds, dict):
+        print("Thresholds JSON must be an object mapping metric name -> minimum score.", file=sys.stderr)
+        sys.exit(1)
 
     faithfulness_scores = []
     relevancy_scores = []
@@ -117,23 +141,35 @@ def main() -> None:
 
     metrics = []
     all_pass = True
-    for metric_name, threshold in thresholds.items():
+    for metric_name in sorted(thresholds.keys()):
+        threshold_raw = thresholds[metric_name]
+        try:
+            threshold_val = float(threshold_raw)
+        except (TypeError, ValueError):
+            print(f"Invalid threshold for {metric_name!r}: {threshold_raw!r}", file=sys.stderr)
+            sys.exit(1)
         score = metric_scores.get(metric_name, 0.0)
-        passed = score >= float(threshold)
+        passed = score >= threshold_val
         all_pass = all_pass and passed
         metrics.append(
             {
                 "name": metric_name,
                 "score": score,
-                "threshold": float(threshold),
+                "threshold": threshold_val,
                 "pass": passed,
             }
         )
 
+    exit_code = 0 if all_pass else 1
     payload = {
         "dataset_path": str(dataset_path),
         "thresholds_path": str(thresholds_path),
+        "credentials": {
+            "require_credentials": os.getenv("REQUIRE_CREDENTIALS", "0") == "1",
+            "openai_api_key_present": bool(os.getenv("OPENAI_API_KEY")),
+        },
         "results_summary": {"pass": all_pass, "metrics": metrics},
+        "exit_code": exit_code,
         "all_metric_scores": metric_scores,
         "cases": case_rows,
     }
@@ -148,7 +184,7 @@ def main() -> None:
             f"threshold={metric['threshold']} pass={metric['pass']}"
         )
     print(f"Results file: {results_path}")
-    sys.exit(0 if all_pass else 1)
+    sys.exit(exit_code)
 
 
 if __name__ == "__main__":

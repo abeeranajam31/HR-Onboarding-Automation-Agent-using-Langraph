@@ -160,3 +160,137 @@ OPENAI_API_KEY=... LANGSMITH_API_KEY=... docker compose up -d --build
 ```
 
 This starts the full packaged system with agent + datastore and persistent volumes.
+
+---
+
+## F) Evidence Section (Ready to Paste in Final Submission)
+
+Use this section with screenshots and terminal outputs.
+
+### Evidence 1: Multi-service startup from configuration only
+
+Commands:
+
+```bash
+cd "/Users/apple/Desktop/2022038_MID/TASK_1_2022038/hr-onboarding-agent"
+docker compose down -v
+docker compose up -d --build
+docker compose ps
+```
+
+Expected proof:
+- `agent` service is Up.
+- `chroma` service is Up.
+- Services start from Docker/Compose files only (no manual environment setup).
+
+Attach:
+- Screenshot of `docker compose ps`.
+- `docker_build.log` file.
+
+### Evidence 2: Service discovery and orchestration
+
+Show from `docker-compose.yaml`:
+- `depends_on: - chroma`
+- `VECTOR_DB_URL: "http://chroma:8000"`
+- named volumes:
+  - `checkpoint_data`
+  - `vector_data`
+
+Expected proof:
+- Agent discovers datastore by Compose service name (`chroma`).
+- Both services are orchestrated together.
+
+Attach:
+- Screenshot of `docker-compose.yaml` section.
+
+### Evidence 3: Stop together behavior
+
+Commands:
+
+```bash
+docker compose down
+docker compose ps
+```
+
+Expected proof:
+- Project containers are stopped/removed together.
+
+Attach:
+- Screenshot of `docker compose down` and `docker compose ps`.
+
+### Evidence 4: Persistence survives restart
+
+Commands:
+
+```bash
+docker compose up -d
+curl -sS -X POST http://127.0.0.1:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Show onboarding status for EMP1001","thread_id":"persist-001"}'
+
+docker exec hr-onboarding-agent-agent-1 ls -l /app/persistence/checkpoints
+docker compose restart agent
+sleep 3
+docker exec hr-onboarding-agent-agent-1 ls -l /app/persistence/checkpoints
+```
+
+Expected proof:
+- Checkpoint DB file exists before restart.
+- Checkpoint DB file still exists after restart.
+
+Attach:
+- Two screenshots (before/after restart listing).
+
+### Evidence 5: End-to-end API correctness
+
+Commands:
+
+```bash
+curl -sS -X POST http://127.0.0.1:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Evaluate Day-1 readiness for EMP1001","thread_id":"demo-001"}'
+
+curl -sS -N -X POST http://127.0.0.1:8000/stream \
+  -H "Content-Type: application/json" \
+  -d '{"message":"Show onboarding status for EMP1001","thread_id":"demo-002"}'
+```
+
+Expected proof:
+- `/chat` returns valid JSON response with `answer`, `status`, `thread_id`.
+- `/stream` returns SSE chunks and final `done` event.
+
+Attach:
+- `api_test_results.txt`
+- screenshot of terminal output.
+
+### Evidence 6: CI quality gate pass/fail
+
+Pass proof:
+- Push baseline thresholds (`eval_thresholds.json`) -> workflow green.
+
+Fail proof:
+- Temporarily replace with strict thresholds (`eval_thresholds_strict_demo.json`) -> workflow red.
+
+Restore proof:
+- Restore baseline thresholds -> workflow green again.
+
+Attach:
+- GitHub Actions screenshots:
+  1. pass
+  2. fail
+  3. pass after restore
+
+---
+
+## G) Final Checklist Before Submission
+
+- [ ] `Dockerfile` present and justified in report.
+- [ ] `docker-compose.yaml` has agent + datastore + volumes + runtime env injection.
+- [ ] `.dockerignore` excludes secrets and local artifacts.
+- [ ] `docker_build.log` updated with latest run.
+- [ ] `api_test_results.txt` updated with latest run.
+- [ ] `run_eval.py` exits 0/1 and writes JSON results.
+- [ ] `eval_thresholds.json` has at least two metrics.
+- [ ] `.github/workflows/main.yml` exists at repo root and runs on push to `main`.
+- [ ] Pass/fail/pass GitHub Actions screenshots captured.
+- [ ] Final report PDF/Word includes above evidence screenshots.

@@ -1,10 +1,41 @@
+# Final Exam Part A Requirements — dependencies to add/verify
+# These are additions to the existing requirements.txt
+# Full merged list below includes all existing + new dependencies.
+
+# ── Web Framework ──────────────────────────────────────────────
 fastapi==0.135.1
 uvicorn==0.41.0
+
+# ── Frontend ───────────────────────────────────────────────────
+streamlit==1.45.1
+
+# ── Agent Orchestration ────────────────────────────────────────
 langgraph==0.2.16
 langgraph-checkpoint-sqlite==1.0.4
 langchain-core==0.2.38
+
+# ── Data Validation ────────────────────────────────────────────
 pydantic==2.12.5
+
+# ── PDF / Document Processing ─────────────────────────────────
 pypdf==4.2.0
+
+# ── Configuration ─────────────────────────────────────────────
 python-dotenv==1.0.1
+
+# ── Report Generation ─────────────────────────────────────────
 reportlab==4.2.5
+
+# ── Database ──────────────────────────────────────────────────
 aiosqlite==0.20.0
+# sqlite3 is part of Python standard library — no pip install needed
+
+# ── HTTP Client ────────────────────────────────────────────────
+requests==2.32.3
+
+# ── Data Analysis (for analyze_feedback.py and reporting) ─────
+pandas==2.2.2
+tabulate==0.9.0
+
+# ── Evaluation ────────────────────────────────────────────────
+deepeval==0.21.73

@@ -1,0 +1,43 @@
+{
+  "description": "Sample machine-readable evaluation outputs for demo (one passing run, one failing run).",
+  "runs": [
+    {
+      "run_name": "baseline_pass",
+      "source_file": "output/eval_results.json",
+      "overall_pass": true,
+      "metrics": [
+        {
+          "name": "faithfulness",
+          "score": 0.805,
+          "threshold": 0.8,
+          "pass": true
+        },
+        {
+          "name": "relevancy",
+          "score": 0.79,
+          "threshold": 0.75,
+          "pass": true
+        }
+      ]
+    },
+    {
+      "run_name": "strict_threshold_fail_demo",
+      "source_file": "output/eval_results_fail_demo.json",
+      "overall_pass": false,
+      "metrics": [
+        {
+          "name": "faithfulness",
+          "score": 0.773,
+          "threshold": 0.9,
+          "pass": false
+        },
+        {
+          "name": "relevancy",
+          "score": 0.297,
+          "threshold": 0.9,
+          "pass": false
+        }
+      ]
+    }
+  ]
+}

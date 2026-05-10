@@ -66,6 +66,79 @@ def _extract_employee_id(text: str) -> str:
     return f"EMP{digits}" if digits else "EMP1001"
 
 
+# ── Actions this agent is NOT capable of performing ──────────────────────────
+_UNSUPPORTED_ACTIONS = [
+    "send email", "send reminder", "send a reminder", "send an email",
+    "email manager", "email the manager", "notify manager", "send notification",
+    "delete employee", "delete record", "remove employee",
+    "fire employee", "terminate employee", "terminate contract",
+    "update salary", "change salary", "modify payroll", "edit payroll",
+    "give raise", "approve leave", "reject leave",
+    "book meeting", "schedule meeting", "create calendar",
+]
+
+
+def _is_unsupported(text: str) -> bool:
+    """Return True if the user is asking for an action outside the agent's tool set."""
+    lower = text.lower()
+    return any(phrase in lower for phrase in _UNSUPPORTED_ACTIONS)
+
+
+def _decline_response(user_text: str) -> str:
+    """Return a polite refusal with concrete alternative steps (AFTER behaviour)."""
+    lower = user_text.lower()
+
+    # Email / reminder / notification
+    if any(k in lower for k in ["email", "reminder", "notify", "notification"]):
+        return (
+            "❌ **I'm not able to send emails or notifications** — "
+            "this agent does not have access to a mail or messaging tool.\n\n"
+            "✅ **Here's how to do it instead:**\n"
+            "1. Log in to the **HR Portal** (hr.company.com)\n"
+            "2. Navigate to **Employee → Onboarding → Notifications**\n"
+            "3. Click **Send Reminder** next to the employee's name\n"
+            "4. The system will email the manager automatically.\n\n"
+            "_Tip: You can ask me to check onboarding status or day-1 readiness instead._"
+        )
+
+    # Termination / deletion
+    if any(k in lower for k in ["fire", "terminate", "delete", "remove"]):
+        return (
+            "❌ **I'm not able to terminate or delete employee records** — "
+            "this is a restricted action requiring HR Director approval.\n\n"
+            "✅ **Here's the correct process:**\n"
+            "1. Raise a **Separation Request** in the HR system\n"
+            "2. Get approval from the **HR Director** and **Legal**\n"
+            "3. The Records team will process the deletion after full clearance.\n\n"
+            "_Contact hr-support@company.com for urgent cases._"
+        )
+
+    # Payroll / salary
+    if any(k in lower for k in ["salary", "payroll", "raise", "pay"]):
+        return (
+            "❌ **I'm not able to modify payroll or salary records** — "
+            "these changes require Finance team authorization.\n\n"
+            "✅ **Here's what to do:**\n"
+            "1. Submit a **Compensation Change Request** via the HR Portal\n"
+            "2. Your manager and Finance must co-approve\n"
+            "3. Changes take effect from the next payroll cycle.\n\n"
+            "_Ask me about onboarding status, checklists, or day-1 readiness instead._"
+        )
+
+    # Generic fallback for other unsupported actions
+    return (
+        "❌ **I'm not able to perform that action** — "
+        "it falls outside my available tools.\n\n"
+        "✅ **What I *can* help you with:**\n"
+        "- Check employee onboarding status\n"
+        "- Evaluate day-1 readiness\n"
+        "- Generate onboarding checklists\n"
+        "- Calculate onboarding risk\n"
+        "- Search the HR knowledge base\n\n"
+        "_Please contact HR Support for actions requiring direct system access._"
+    )
+
+
 def _pick_tool(user_text: str, employee_id: str) -> dict[str, Any]:
     lower = user_text.lower()
     if "checklist" in lower and any(term in lower for term in ("guidance", "find", "search")):
@@ -111,6 +184,17 @@ def agent_node(state: SecurityState) -> SecurityState:
     started_at = time.perf_counter()
     query = _latest_user_query(state["messages"])
     employee_id = _extract_employee_id(query)
+
+    # ── GUARD: intercept unsupported actions — decline immediately ────────────
+    if _is_unsupported(query):
+        decline_msg = _decline_response(query)
+        return {
+            "messages": [AIMessage(content=decline_msg)],
+            "sanitized_output": decline_msg,
+            "selected_tool": "declined",
+            "trace": _append_trace(state, "agent_node", started_at, selected_tool="declined", reason="unsupported_action"),
+        }
+
     call = _pick_tool(query, employee_id)
     return {
         "messages": [AIMessage(content="Reasoning: selecting safe tool for the request.", tool_calls=[call])],
@@ -153,10 +237,14 @@ def route_after_guardrail(state: SecurityState) -> Literal["agent", "alert"]:
     return "agent"
 
 
-def route_after_agent(state: SecurityState) -> Literal["tools", "alert"]:
+def route_after_agent(state: SecurityState) -> Literal["tools", "alert", "end"]:
     last = state["messages"][-1]
     if isinstance(last, AIMessage) and last.tool_calls:
+        # Has tool calls → execute the tool
         return "tools"
+    if isinstance(last, AIMessage) and not last.tool_calls:
+        # No tool calls → direct response (decline message) — go straight to END
+        return "end"
     return "alert"
 
 
@@ -169,7 +257,7 @@ def build_secured_graph(checkpointer=None):
     g.add_node("alert", alert_node)
     g.set_entry_point("guardrail_node")
     g.add_conditional_edges("guardrail_node", route_after_guardrail, {"agent": "agent_node", "alert": "alert"})
-    g.add_conditional_edges("agent_node", route_after_agent, {"tools": "tools", "alert": "alert"})
+    g.add_conditional_edges("agent_node", route_after_agent, {"tools": "tools", "alert": "alert", "end": END})
     g.add_edge("tools", "output_guardrail")
     g.add_edge("output_guardrail", END)
     g.add_edge("alert", END)
